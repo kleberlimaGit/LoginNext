@@ -1,5 +1,52 @@
-export default function AuthPageStatic(props:any){
-    return (
+import { getSessionDataCookie } from "@/services/auth/auth";
+import { makePrivateRequest } from "@/services/auth/requests";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+
+function useSession() {
+  const [session, setSession] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  async function getSession(ctx = null){
+    await makePrivateRequest({url: '/api/session'}, ctx).then((res) => {
+      setSession(res.data.data)  
+    }).catch((err) => {
+      setError(err)
+    }).finally(() => {
+      setLoading(false)
+    })
+  }
+
+  useEffect(() => {
+    getSession();
+  },[])
+
+  return {
+    data: session,
+    error,
+    loading
+  }
+}
+
+function withSessionHOC(Component:any){
+  return function Wrapper(props:any){
+    const router = useRouter()
+    const session = useSession();  
+    if(!session.loading && session.error){
+      router.push("/?error=401")
+    }
+
+    const modifiedProps = {
+      ...props,
+      session: session.data,
+    }
+    return <Component {...modifiedProps}/>
+  }
+}
+
+function AuthPageStatic(props:any){
+  return (
         <div>
           <h1>
             Auth Page Static
@@ -10,3 +57,5 @@ export default function AuthPageStatic(props:any){
         </div>
       )
     }
+
+    export default withSessionHOC(AuthPageStatic)

@@ -45,7 +45,7 @@ export default function Home() {
       .then((res) => {
         const access_token = res.data.data.access_token
         saveSessionData({access_token: access_token});
-        router.push("/auth-page-ssr");
+        router.push("/auth-page-static");
       })
       .catch(() => {
         alert("Usuário ou senha inváldos");
