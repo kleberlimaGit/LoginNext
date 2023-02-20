@@ -1,5 +1,6 @@
 import axios, { Method } from "axios";
 import qs from 'qs'
+import { getSessionData, getSessionDataCookie } from "./auth";
 
 type RequestParam = {
   method?: Method;
@@ -51,4 +52,13 @@ export const makeLogin = (loginData:LoginData) => {
 
     return makeRequest({url: '/api/login', data:payload, method: 'POST', headers })
 
+}
+
+
+export const makePrivateRequest = ({ method = 'GET', url, data, params}: RequestParam, ctx: any) => {
+    const sessionData = getSessionDataCookie(ctx);
+    const headers ={
+        'Authorization':`Bearer ${sessionData}`
+    }
+    return makeRequest({method, url, data , params, headers})
 }

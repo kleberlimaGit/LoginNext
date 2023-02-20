@@ -1,4 +1,6 @@
 import { getSessionData, getSessionDataCookie, logout } from "@/services/auth/auth";
+import { makePrivateRequest } from "@/services/auth/requests";
+import { withSession } from "@/services/auth/sessions";
 import { useRouter } from "next/router";
 
 export default function AuthPageSSR(props:any){
@@ -20,10 +22,11 @@ export default function AuthPageSSR(props:any){
       )
     }
 
-    export const getServerSideProps = async (ctx:any) => {
+    
+    export const getServerSideProps = withSession((ctx:any) => {
       return {
         props: {
-          token: getSessionDataCookie(ctx)
+          session: ctx.req.session
         }
       }
-    }
+    })
