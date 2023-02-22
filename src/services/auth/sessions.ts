@@ -1,12 +1,10 @@
-import { useRouter } from "next/router"
-import { type } from "os"
-import { ReactNode, useEffect, useState } from "react"
 import { makePrivateRequest } from "./requests"
 
 export function withSession(func:any){
     return async (ctx:any) => {
         try {
           const session = await makePrivateRequest({url:'/api/session'}, ctx).then((res) => {
+            console.log("teste >>>>>>>>>>>>>>>"+session)
             return res.data.data
         }) 
     const modifiedCtx = {

@@ -1,6 +1,8 @@
+import { REFRESH_TOKEN } from "@/pages/api/refresh.api";
 import axios, { Method } from "axios";
+import nookies from 'nookies'
 import qs from 'qs'
-import { getSessionData, getSessionDataCookie } from "./auth";
+import { getSessionDataCookie } from "./auth";
 
 type RequestParam = {
   method?: Method;
@@ -12,6 +14,7 @@ type RequestParam = {
 
 
 const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+const BASE_URL_API = process.env.NEXT_PUBLIC_API_URL
 
 type LoginData = {
     username:string;
@@ -36,11 +39,20 @@ export const makeRequest = ({ method = 'GET', url, data, params, headers}: Reque
         url: `${BASE_URL}${url}` ,
         data,
         params,
+        headers     
+    });
+};
+
+export const makeRequestApi = ({ method = 'GET', url, data, params, headers}: RequestParam) =>{
+    return axios({
+        method, // nao foi passado um valor pois chave e valor tem o mesmo nome
+        url: `${BASE_URL_API}${url}` ,
+        data,
+        params,
         headers
         
     });
 };
-
 
 export const makeLogin = (loginData:LoginData) => {
 

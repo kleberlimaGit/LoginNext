@@ -1,5 +1,4 @@
-import { getSessionData, getSessionDataCookie, logout } from "@/services/auth/auth";
-import { makePrivateRequest } from "@/services/auth/requests";
+import { logout } from "@/services/auth/auth";
 import { withSession } from "@/services/auth/sessions";
 import { useRouter } from "next/router";
 

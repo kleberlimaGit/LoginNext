@@ -2,7 +2,7 @@ import { useForm } from "react-hook-form";
 import * as zod from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/router";
-import { makeLogin } from "@/services/auth/requests";
+import { makeLogin, makeRequestApi } from "@/services/auth/requests";
 import { useState } from "react";
 import { saveSessionData } from "@/services/auth/auth";
 export default function Home() {
@@ -13,7 +13,14 @@ export default function Home() {
     password: string;
   }
 
-  const [values, setValues] = useState<LoginData>({username: 'omariosouto', password:'safepassword' })
+  interface Token {
+    refresh_token: string
+  }
+
+  const [values, setValues] = useState<LoginData>({
+    username: "omariosouto",
+    password: "safepassword",
+  });
   const loginFormSchema = zod
     .object({
       usuario: zod.string(),
@@ -43,9 +50,16 @@ export default function Home() {
 
     makeLogin(data)
       .then((res) => {
-        const access_token = res.data.data.access_token
-        saveSessionData({access_token: access_token});
+        const access_token = res.data.data.access_token;
+        const body = res.data.data;
+        saveSessionData({ access_token: access_token });
         router.push("/auth-page-static");
+        return body;
+      })
+      .then(async (data) => {
+        const { refresh_token } = data;
+        const payload: Token = {refresh_token} 
+        const response = await makeRequestApi({method: 'POST', url:'/api/refresh', data:payload})
       })
       .catch(() => {
         alert("Usuário ou senha inváldos");
@@ -76,9 +90,7 @@ export default function Home() {
           />
           {errors.passwordConfirm && <p>{errors.passwordConfirm.message}</p>}
         </div>
-        <pre>
-          {JSON.stringify(values, null, 2)}
-        </pre>
+        <pre>{JSON.stringify(values, null, 2)}</pre>
         <div>
           <button type="submit">Entrar</button>
         </div>

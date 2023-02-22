@@ -1,6 +1,4 @@
-import { getSessionDataCookie } from "@/services/auth/auth";
 import { makePrivateRequest } from "@/services/auth/requests";
-import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
 function useSession() {
@@ -31,12 +29,7 @@ function useSession() {
 
 function withSessionHOC(Component:any){
   return function Wrapper(props:any){
-    const router = useRouter()
     const session = useSession();  
-    if(!session.loading && session.error){
-      router.push("/?error=401")
-    }
-
     const modifiedProps = {
       ...props,
       session: session.data,
